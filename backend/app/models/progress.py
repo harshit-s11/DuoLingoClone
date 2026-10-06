@@ -16,7 +16,7 @@ from sqlalchemy import (
     UniqueConstraint,
     text,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, synonym
 
 from app.database import Base
 
@@ -79,6 +79,7 @@ class LessonAttempt(Base):
     completed_at = Column(DateTime(timezone=True), nullable=True)
     hearts_lost = Column(Integer, default=0, nullable=False)
     xp_earned = Column(Integer, default=0, nullable=False)
+    xp_awarded = synonym("xp_earned")
     accuracy = Column(Float, default=0.0, nullable=False)
     created_at = Column(
         DateTime(timezone=True),
