@@ -21,11 +21,15 @@ Represents learners. Default local learner has `id = 1`.
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username VARCHAR(64) NOT NULL UNIQUE,
+    is_bot BOOLEAN NOT NULL DEFAULT 0,
     hearts INTEGER NOT NULL DEFAULT 5 CHECK(hearts BETWEEN 0 AND 5),
     hearts_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     xp_total INTEGER NOT NULL DEFAULT 0 CHECK(xp_total >= 0),
     gems INTEGER NOT NULL DEFAULT 500 CHECK(gems >= 0),
     streak_current INTEGER NOT NULL DEFAULT 0 CHECK(streak_current >= 0),
+    daily_xp_goal INTEGER NOT NULL DEFAULT 20,
+    dark_mode BOOLEAN NOT NULL DEFAULT 0,
+    sound_enabled BOOLEAN NOT NULL DEFAULT 1,
     date_offset_days INTEGER NOT NULL DEFAULT 0,
     timezone VARCHAR(64) NOT NULL DEFAULT 'UTC',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -55,11 +59,13 @@ CREATE TABLE units (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     course_id INTEGER NOT NULL,
     unit_order INTEGER NOT NULL,
+    slug VARCHAR(64) NOT NULL,
     title VARCHAR(128) NOT NULL,
     description TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (course_id) REFERENCES courses (id) ON DELETE CASCADE,
-    UNIQUE (course_id, unit_order)
+    UNIQUE (course_id, unit_order),
+    UNIQUE (course_id, slug)
 );
 ```
 
@@ -71,13 +77,15 @@ CREATE TABLE skills (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     unit_id INTEGER NOT NULL,
     skill_order INTEGER NOT NULL,
+    slug VARCHAR(64) NOT NULL,
     name VARCHAR(128) NOT NULL,
     description TEXT NOT NULL,
     icon_name VARCHAR(64) NOT NULL,
     total_crowns INTEGER NOT NULL DEFAULT 5,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (unit_id) REFERENCES units (id) ON DELETE CASCADE,
-    UNIQUE (unit_id, skill_order)
+    UNIQUE (unit_id, skill_order),
+    UNIQUE (unit_id, slug)
 );
 ```
 *Note: `crown_count` and `xp_reward` are strictly excluded from this table.*
@@ -90,10 +98,12 @@ CREATE TABLE lessons (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     skill_id INTEGER NOT NULL,
     lesson_order INTEGER NOT NULL,
+    slug VARCHAR(64) NOT NULL,
     title VARCHAR(128) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (skill_id) REFERENCES skills (id) ON DELETE CASCADE,
-    UNIQUE (skill_id, lesson_order)
+    UNIQUE (skill_id, lesson_order),
+    UNIQUE (skill_id, slug)
 );
 ```
 
@@ -105,12 +115,14 @@ CREATE TABLE exercises (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     lesson_id INTEGER NOT NULL,
     exercise_order INTEGER NOT NULL,
+    slug VARCHAR(64) NOT NULL,
     type VARCHAR(32) NOT NULL CHECK(type IN ('multiple_choice', 'translate', 'match_pairs', 'fill_blank', 'type_answer')),
     payload_json TEXT NOT NULL,  -- Public question prompt, options, distractors
     answer_json TEXT NOT NULL,   -- Private authoritative correct solution (NEVER exposed to frontend)
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (lesson_id) REFERENCES lessons (id) ON DELETE CASCADE,
-    UNIQUE (lesson_id, exercise_order)
+    UNIQUE (lesson_id, exercise_order),
+    UNIQUE (lesson_id, slug)
 );
 ```
 
@@ -215,8 +227,8 @@ CREATE TABLE achievements (
     title VARCHAR(128) NOT NULL,
     description TEXT NOT NULL,
     badge_icon VARCHAR(64) NOT NULL,
-    target_value INTEGER NOT NULL,
-    category VARCHAR(64) NOT NULL,
+    condition_type VARCHAR(64) NOT NULL,
+    threshold INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 ```

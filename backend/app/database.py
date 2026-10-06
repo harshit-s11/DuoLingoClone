@@ -50,3 +50,11 @@ def get_db() -> Generator:
         yield db
     finally:
         db.close()
+
+
+def init_db() -> None:
+    """Initialize database tables for all registered models."""
+    ensure_data_directory()
+    import app.models  # noqa: F401
+
+    Base.metadata.create_all(bind=engine)

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -7,10 +8,10 @@ class Settings(BaseSettings):
     app_name: str = "Duolingo Clone API"
     app_version: str = "0.1.0"
     data_dir: Path = Path("./data")
-    database_url: str = "sqlite:///./data/duolingo_clone.db"
+    database_url: str = os.environ.get("DATABASE_URL", "sqlite:///./data/duolingo_clone.db")
     enable_debug: bool = True
     backend_host: str = "0.0.0.0"
-    backend_port: int = 8000
+    backend_port: int = int(os.environ.get("PORT", "8000"))
     cors_origins: list[str] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",

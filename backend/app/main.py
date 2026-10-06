@@ -5,14 +5,19 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.health import router as health_router
 from app.config import settings
-from app.database import ensure_data_directory
+from app.database import ensure_data_directory, init_db
 from app.fixtures.router import fixture_router
+from app.seed import seed_database
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Ensure local data directory is created on startup
     ensure_data_directory()
+    # Create all database tables deterministically
+    init_db()
+    # Run deterministic idempotent seed
+    seed_database()
     yield
 
 
