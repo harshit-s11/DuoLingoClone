@@ -1,0 +1,1734 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Duolingo Clone API",
+    "description": "Duolingo clone backend API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Get Health",
+        "description": "Health check verifying app and database readiness.",
+        "operationId": "get_health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Get Health",
+        "description": "Health check verifying app and database readiness.",
+        "operationId": "get_health_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me": {
+      "get": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Get Current User",
+        "description": "Retrieve current authenticated user stats.",
+        "operationId": "get_current_user_api_me_get",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Get User Profile",
+        "description": "Retrieve full user profile with stats and recent activity.",
+        "operationId": "get_user_profile_api_profile_get",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/settings": {
+      "get": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Get Settings",
+        "description": "Retrieve user preferences.",
+        "operationId": "get_settings_api_settings_get",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Update Settings",
+        "description": "Update user preferences.",
+        "operationId": "update_settings_api_settings_patch",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/courses": {
+      "get": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "List Courses",
+        "description": "List available courses.",
+        "operationId": "list_courses_api_courses_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CourseItem"
+                  },
+                  "type": "array",
+                  "title": "Response List Courses Api Courses Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/courses/{course_id}/path": {
+      "get": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Get Course Path",
+        "description": "Get hierarchical learning path (units -> skills -> lessons).",
+        "operationId": "get_course_path_api_courses__course_id__path_get",
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Course Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoursePathResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/lessons/{lesson_id}": {
+      "get": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Get Lesson Metadata",
+        "description": "Get lesson exercises (payloads only, answer keys strictly omitted).",
+        "operationId": "get_lesson_metadata_api_lessons__lesson_id__get",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonMetadataResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/lessons/{lesson_id}/start": {
+      "post": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Start Lesson Attempt",
+        "description": "Authoritatively start a server-side lesson attempt.",
+        "operationId": "start_lesson_attempt_api_lessons__lesson_id__start_post",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Lesson Id"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartAttemptResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/attempts/{attempt_id}/check": {
+      "post": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Check Attempt Answer",
+        "description": "Validate submitted answer and enforce heart rules.",
+        "operationId": "check_attempt_answer_api_attempts__attempt_id__check_post",
+        "parameters": [
+          {
+            "name": "attempt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Attempt Id"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckAnswerRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckAnswerResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/attempts/{attempt_id}/complete": {
+      "post": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Complete Attempt",
+        "description": "Authoritatively complete an attempt, awarding XP and crowns.",
+        "operationId": "complete_attempt_api_attempts__attempt_id__complete_post",
+        "parameters": [
+          {
+            "name": "attempt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Attempt Id"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompleteAttemptResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/attempts/{attempt_id}/abandon": {
+      "post": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Abandon Attempt",
+        "description": "Abandon an active attempt.",
+        "operationId": "abandon_attempt_api_attempts__attempt_id__abandon_post",
+        "parameters": [
+          {
+            "name": "attempt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Attempt Id"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AbandonAttemptResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hearts/refill": {
+      "post": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Refill Hearts",
+        "description": "Refill hearts via gems (350) or practice.",
+        "operationId": "refill_hearts_api_hearts_refill_post",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefillHeartsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefillHeartsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/leaderboard": {
+      "get": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Get Leaderboard",
+        "description": "Get current week's leaderboard standings.",
+        "operationId": "get_leaderboard_api_leaderboard_get",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeaderboardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/achievements": {
+      "get": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "List Achievements",
+        "description": "List achievements and progress.",
+        "operationId": "list_achievements_api_achievements_get",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AchievementItem"
+                  },
+                  "title": "Response List Achievements Api Achievements Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/debug/advance-day": {
+      "post": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Debug Advance Day",
+        "description": "Simulate advancing logical clock.",
+        "operationId": "debug_advance_day_api_debug_advance_day_post",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdvanceDayRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdvanceDayResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/debug/unlock-all": {
+      "post": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Debug Unlock All",
+        "description": "Debug helper: unlock all lessons for user 1.",
+        "operationId": "debug_unlock_all_api_debug_unlock_all_post",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleMessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/debug/reset-demo": {
+      "post": {
+        "tags": [
+          "Phase-0 Fixtures"
+        ],
+        "summary": "Debug Reset Demo",
+        "description": "Debug helper: reset user 1 progress and stats.",
+        "operationId": "debug_reset_demo_api_debug_reset_demo_post",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleMessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AbandonAttemptResponse": {
+        "properties": {
+          "attempt_id": {
+            "type": "integer",
+            "title": "Attempt Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "attempt_id",
+          "status"
+        ],
+        "title": "AbandonAttemptResponse"
+      },
+      "AchievementItem": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "badge_icon": {
+            "type": "string",
+            "title": "Badge Icon"
+          },
+          "target_value": {
+            "type": "integer",
+            "title": "Target Value"
+          },
+          "current_value": {
+            "type": "integer",
+            "title": "Current Value"
+          },
+          "is_unlocked": {
+            "type": "boolean",
+            "title": "Is Unlocked"
+          },
+          "unlocked_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unlocked At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "title",
+          "description",
+          "badge_icon",
+          "target_value",
+          "current_value",
+          "is_unlocked"
+        ],
+        "title": "AchievementItem"
+      },
+      "ActivityItem": {
+        "properties": {
+          "activity_date": {
+            "type": "string",
+            "title": "Activity Date"
+          },
+          "xp_earned": {
+            "type": "integer",
+            "title": "Xp Earned"
+          },
+          "lessons_completed": {
+            "type": "integer",
+            "title": "Lessons Completed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "activity_date",
+          "xp_earned",
+          "lessons_completed"
+        ],
+        "title": "ActivityItem"
+      },
+      "AdvanceDayRequest": {
+        "properties": {
+          "days": {
+            "type": "integer",
+            "title": "Days",
+            "default": 1
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "AdvanceDayRequest"
+      },
+      "AdvanceDayResponse": {
+        "properties": {
+          "date_offset_days": {
+            "type": "integer",
+            "title": "Date Offset Days"
+          },
+          "logical_now": {
+            "type": "string",
+            "title": "Logical Now"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "date_offset_days",
+          "logical_now"
+        ],
+        "title": "AdvanceDayResponse"
+      },
+      "CheckAnswerRequest": {
+        "properties": {
+          "exercise_id": {
+            "type": "integer",
+            "title": "Exercise Id"
+          },
+          "user_answer": {
+            "title": "User Answer"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "exercise_id",
+          "user_answer"
+        ],
+        "title": "CheckAnswerRequest"
+      },
+      "CheckAnswerResponse": {
+        "properties": {
+          "is_correct": {
+            "type": "boolean",
+            "title": "Is Correct"
+          },
+          "correct_answer": {
+            "title": "Correct Answer"
+          },
+          "hearts_remaining": {
+            "type": "integer",
+            "title": "Hearts Remaining"
+          },
+          "attempt_status": {
+            "type": "string",
+            "title": "Attempt Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "is_correct",
+          "correct_answer",
+          "hearts_remaining",
+          "attempt_status"
+        ],
+        "title": "CheckAnswerResponse"
+      },
+      "CompleteAttemptResponse": {
+        "properties": {
+          "attempt_id": {
+            "type": "integer",
+            "title": "Attempt Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "xp_earned": {
+            "type": "integer",
+            "title": "Xp Earned"
+          },
+          "accuracy": {
+            "type": "number",
+            "title": "Accuracy"
+          },
+          "hearts_lost": {
+            "type": "integer",
+            "title": "Hearts Lost"
+          },
+          "is_replay": {
+            "type": "boolean",
+            "title": "Is Replay"
+          },
+          "new_crown_earned": {
+            "type": "boolean",
+            "title": "New Crown Earned"
+          },
+          "streak_current": {
+            "type": "integer",
+            "title": "Streak Current"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "attempt_id",
+          "status",
+          "xp_earned",
+          "accuracy",
+          "hearts_lost",
+          "is_replay",
+          "new_crown_earned",
+          "streak_current"
+        ],
+        "title": "CompleteAttemptResponse"
+      },
+      "CourseItem": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "flag_emoji": {
+            "type": "string",
+            "title": "Flag Emoji"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "title",
+          "description",
+          "flag_emoji"
+        ],
+        "title": "CourseItem"
+      },
+      "CoursePathResponse": {
+        "properties": {
+          "course_id": {
+            "type": "integer",
+            "title": "Course Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "units": {
+            "items": {
+              "$ref": "#/components/schemas/UnitSummary"
+            },
+            "type": "array",
+            "title": "Units"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "course_id",
+          "title",
+          "units"
+        ],
+        "title": "CoursePathResponse"
+      },
+      "ExerciseClientView": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "exercise_order": {
+            "type": "integer",
+            "title": "Exercise Order"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "payload": {
+            "type": "object",
+            "title": "Payload"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "exercise_order",
+          "type",
+          "payload"
+        ],
+        "title": "ExerciseClientView"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "database": {
+            "type": "string",
+            "title": "Database"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "timestamp",
+          "database",
+          "version"
+        ],
+        "title": "HealthResponse"
+      },
+      "LeaderboardRanking": {
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "xp_earned": {
+            "type": "integer",
+            "title": "Xp Earned"
+          },
+          "is_current_user": {
+            "type": "boolean",
+            "title": "Is Current User"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "rank",
+          "username",
+          "xp_earned",
+          "is_current_user"
+        ],
+        "title": "LeaderboardRanking"
+      },
+      "LeaderboardResponse": {
+        "properties": {
+          "week_start_date": {
+            "type": "string",
+            "title": "Week Start Date"
+          },
+          "rankings": {
+            "items": {
+              "$ref": "#/components/schemas/LeaderboardRanking"
+            },
+            "type": "array",
+            "title": "Rankings"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "week_start_date",
+          "rankings"
+        ],
+        "title": "LeaderboardResponse"
+      },
+      "LessonMetadataResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "skill_id": {
+            "type": "integer",
+            "title": "Skill Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "exercises": {
+            "items": {
+              "$ref": "#/components/schemas/ExerciseClientView"
+            },
+            "type": "array",
+            "title": "Exercises"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "skill_id",
+          "title",
+          "exercises"
+        ],
+        "title": "LessonMetadataResponse"
+      },
+      "LessonSummary": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "lesson_order": {
+            "type": "integer",
+            "title": "Lesson Order"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "is_completed": {
+            "type": "boolean",
+            "title": "Is Completed"
+          },
+          "is_locked": {
+            "type": "boolean",
+            "title": "Is Locked"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "lesson_order",
+          "title",
+          "is_completed",
+          "is_locked"
+        ],
+        "title": "LessonSummary"
+      },
+      "ProfileResponse": {
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserProfileStats"
+          },
+          "recent_activity": {
+            "items": {
+              "$ref": "#/components/schemas/ActivityItem"
+            },
+            "type": "array",
+            "title": "Recent Activity"
+          },
+          "unlocked_achievements_count": {
+            "type": "integer",
+            "title": "Unlocked Achievements Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user",
+          "recent_activity",
+          "unlocked_achievements_count"
+        ],
+        "title": "ProfileResponse"
+      },
+      "RefillHeartsRequest": {
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": [
+              "gems",
+              "practice"
+            ],
+            "title": "Method"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "method"
+        ],
+        "title": "RefillHeartsRequest"
+      },
+      "RefillHeartsResponse": {
+        "properties": {
+          "hearts": {
+            "type": "integer",
+            "title": "Hearts"
+          },
+          "gems": {
+            "type": "integer",
+            "title": "Gems"
+          },
+          "hearts_updated_at": {
+            "type": "string",
+            "title": "Hearts Updated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "hearts",
+          "gems",
+          "hearts_updated_at"
+        ],
+        "title": "RefillHeartsResponse"
+      },
+      "SettingsResponse": {
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "date_offset_days": {
+            "type": "integer",
+            "title": "Date Offset Days"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "timezone",
+          "date_offset_days"
+        ],
+        "title": "SettingsResponse"
+      },
+      "SettingsUpdateRequest": {
+        "properties": {
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SettingsUpdateRequest"
+      },
+      "SimpleMessageResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "SimpleMessageResponse"
+      },
+      "SkillSummary": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "skill_order": {
+            "type": "integer",
+            "title": "Skill Order"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "icon_name": {
+            "type": "string",
+            "title": "Icon Name"
+          },
+          "total_crowns": {
+            "type": "integer",
+            "title": "Total Crowns"
+          },
+          "crowns_earned": {
+            "type": "integer",
+            "title": "Crowns Earned"
+          },
+          "lessons": {
+            "items": {
+              "$ref": "#/components/schemas/LessonSummary"
+            },
+            "type": "array",
+            "title": "Lessons"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "skill_order",
+          "name",
+          "description",
+          "icon_name",
+          "total_crowns",
+          "crowns_earned",
+          "lessons"
+        ],
+        "title": "SkillSummary"
+      },
+      "StartAttemptResponse": {
+        "properties": {
+          "attempt_id": {
+            "type": "integer",
+            "title": "Attempt Id"
+          },
+          "lesson_id": {
+            "type": "integer",
+            "title": "Lesson Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "hearts_remaining": {
+            "type": "integer",
+            "title": "Hearts Remaining"
+          },
+          "exercises": {
+            "items": {
+              "$ref": "#/components/schemas/ExerciseClientView"
+            },
+            "type": "array",
+            "title": "Exercises"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "attempt_id",
+          "lesson_id",
+          "status",
+          "hearts_remaining",
+          "exercises"
+        ],
+        "title": "StartAttemptResponse"
+      },
+      "UnitSummary": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "unit_order": {
+            "type": "integer",
+            "title": "Unit Order"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "skills": {
+            "items": {
+              "$ref": "#/components/schemas/SkillSummary"
+            },
+            "type": "array",
+            "title": "Skills"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "unit_order",
+          "title",
+          "description",
+          "skills"
+        ],
+        "title": "UnitSummary"
+      },
+      "UserProfileStats": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "xp_total": {
+            "type": "integer",
+            "title": "Xp Total"
+          },
+          "streak_current": {
+            "type": "integer",
+            "title": "Streak Current"
+          },
+          "total_crowns": {
+            "type": "integer",
+            "title": "Total Crowns"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "created_at",
+          "xp_total",
+          "streak_current",
+          "total_crowns"
+        ],
+        "title": "UserProfileStats"
+      },
+      "UserResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "hearts": {
+            "type": "integer",
+            "title": "Hearts"
+          },
+          "max_hearts": {
+            "type": "integer",
+            "title": "Max Hearts",
+            "default": 5
+          },
+          "hearts_updated_at": {
+            "type": "string",
+            "title": "Hearts Updated At"
+          },
+          "next_heart_in_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Heart In Seconds"
+          },
+          "xp_total": {
+            "type": "integer",
+            "title": "Xp Total"
+          },
+          "gems": {
+            "type": "integer",
+            "title": "Gems"
+          },
+          "streak_current": {
+            "type": "integer",
+            "title": "Streak Current"
+          },
+          "date_offset_days": {
+            "type": "integer",
+            "title": "Date Offset Days"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "email",
+          "hearts",
+          "hearts_updated_at",
+          "xp_total",
+          "gems",
+          "streak_current",
+          "date_offset_days",
+          "timezone"
+        ],
+        "title": "UserResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
