@@ -129,11 +129,27 @@ DuoLingoClone/
 
 ## 6. Production Deployment & Persistence (Phase 1.5 Gate)
 
-- **Production Target**: Render Web Service (FastAPI) + Vercel (Next.js).
-- **Python Version**: `3.12.8` (configured via `backend/.python-version` and `render.yaml`).
-- **Database Architecture**: SQLite stored at `./data/duolingo_clone.db`.
-- **Phase 1.5 Persistence Decision**: **Render SQLite**.
-  - Evaluated Turso/libSQL: Driver compilation issues and SQLAlchemy 2 partial index incompatibilities make it unsuitable.
-  - Render Free Tier Limitation: Filesystem is ephemeral; restarts or spin-downs reset `./data/duolingo_clone.db`.
-  - Resilience: Automatic idempotent startup seed (`init_db()` + `seed_database()`) restores full schema, 216 curriculum exercises, 8 achievements, 15 leaderboard bots, and User 1 baseline on every container cold start.
+- **Target Architecture**:
+  - **Local Development**: Next.js (Port 3000) → FastAPI (Port 8000) → SQLite (`./data/duolingo_clone.db`).
+  - **Production Deployment**: Vercel (Next.js frontend) → Railway (FastAPI backend) → SQLite (`./data/duolingo_clone.db`).
+- **Database Engine**:
+  - SQLite with `PRAGMA foreign_keys = ON;`.
+  - Database file: `duolingo_clone.db` inside `./data/`.
+  - Authoritative SQLite database layer across environments.
+- **Python Version**: `3.12.8` (configured in `backend/.python-version`).
+- **Deployment Files**:
+  - `railway.json`: Root Railway blueprint specification (Nixpacks builder, start command).
+  - `backend/Procfile`: Web process definition (`uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}`).
+- **Environment Variables**:
+  - **Local (`backend/.env`)**:
+    - `DATABASE_URL=sqlite:///./data/duolingo_clone.db`
+    - `ENABLE_DEBUG=true`
+  - **Production (Railway)**:
+    - `DATABASE_URL=sqlite:///./data/duolingo_clone.db`
+    - `PORT`: Provided dynamically by Railway runtime.
+    - `ENABLE_DEBUG=true`
+- **Railway SQLite Persistence Limitation**:
+  - Railway container filesystems are ephemeral by default. Container redeploys, manual restarts, or sleep cycles reset `./data/duolingo_clone.db` unless a persistent volume is mounted at `./data`.
+  - On cold boot, the startup lifespan's deterministic idempotent seed restores the complete 13-table curriculum, achievements, leaderboard bots, and User 1 baseline.
+  - Production persistence on Railway is NOT claimed as proven at this gate. Phase 1.5 persistence is NOT complete.
 

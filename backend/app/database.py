@@ -32,7 +32,6 @@ engine = create_engine(
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
     """Enforce foreign key constraints on every SQLite connection."""
-    # Check if this connection is a SQLite connection
     if hasattr(dbapi_connection, "cursor"):
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA foreign_keys=ON;")

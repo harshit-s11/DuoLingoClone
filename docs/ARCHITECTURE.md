@@ -85,18 +85,30 @@ graph LR
 
 ---
 
-## 4. Phase 1.5 Persistence Decision Gate (Final Decision)
+## 4. Phase 1.5 Database Architecture & Railway Deployment
 
-- **Local Database**: Plain SQLite file at `./data/duolingo_clone.db` with `PRAGMA foreign_keys = ON;`.
-- **Production Database**: SQLite at `./data/duolingo_clone.db` on Render.
-- **Evaluation Outcome & Spike Analysis**:
-  - *Turso / libSQL Spike*: Evaluated `sqlalchemy-libsql` (v0.2.0) and `libsql-experimental`. The client driver failed native compilation/linking on modern Python environments and exhibits known dialect friction with SQLAlchemy 2 (specifically SQLite partial unique index filtering `sqlite_where`). To maintain architecture stability and avoid fragile proprietary drivers, Turso/libSQL was rejected.
-  - *Render SQLite Restart Behavior*: Tested with a real lesson attempt in `lesson_attempts`. Process-level restarts on persistent filesystems cleanly preserve all tables, rows, and idempotent seed state. However, on the Render Free tier, the filesystem is ephemeral: container spin-down or rebuilds reset `./data` back to fresh deployment state.
-  - *Idempotent Seed Resilience*: On every cold start or container reset, the FastAPI startup lifespan deterministically executes `init_db()` and `seed_database()`, recreating the complete 13-table schema, 216 curriculum exercises, 8 achievements, 15 leaderboard bots, and User 1 baseline progress.
-  - *Final Decision*: **Ship Render SQLite as the production database**.
-- **Required Environment Variables**:
+### 4.1 Environments & Stack Definition
+
+- **Local Development**:
+  $$\text{Next.js (Port 3000)} \longrightarrow \text{FastAPI (Port 8000)} \longrightarrow \text{SQLite (./data/duolingo_clone.db)}$$
   - `DATABASE_URL`: `sqlite:///./data/duolingo_clone.db`
-  - `PYTHON_VERSION`: `3.12.8`
-  - `PORT`: Provided dynamically by Render (defaults to `8000`)
-  - `ENABLE_DEBUG`: `true`
-- **Known Free-Tier Limitation**: On the free tier of Render, learner state created during an active container session resets if Render terminates the idle container. For persistent multi-month persistence on Render without reset, a persistent disk add-on ($0.25/GB/mo on Starter tier) would be required. Local development strictly uses plain SQLite without reset.
+  - Connection pragma: `PRAGMA foreign_keys = ON;` enforced on every connection.
+  - Runtime database directory `./data` created automatically at startup.
+
+- **Production Deployment**:
+  $$\text{Vercel (Next.js Frontend)} \longrightarrow \text{Railway (FastAPI Service)} \longrightarrow \text{SQLite (./data/duolingo_clone.db)}$$
+  - `DATABASE_URL`: `sqlite:///./data/duolingo_clone.db`
+  - Host: Railway Web Service running Python 3.12.8 via Nixpacks (`railway.json` / `backend/Procfile`).
+  - Database: Authoritative SQLite database file at `./data/duolingo_clone.db`.
+  - Pure SQLite database layer across local and deployed environments.
+
+### 4.2 Seed & Lifespan Behavior
+- On startup, the FastAPI lifespan executes `ensure_data_directory()`, `init_db()` (creates all 13 locked tables), and `seed_database()`.
+- Seeding is deterministic and idempotent:
+  - Upserts course, 3 units, 9 skills, 27 lessons, 216 exercises, 8 achievements, and 15 leaderboard bots.
+  - Default learner (User 1) progress is preserved and never overwritten across subsequent seed runs.
+
+### 4.3 Railway SQLite Persistence Limitation
+- Standard Railway containers run on an ephemeral filesystem. Unless an external Railway persistent volume is mounted at `./data`, application redeployments, restarts, or container sleep cycles reset `./data/duolingo_clone.db`.
+- On cold boot, the deterministic idempotent seed restores the baseline curriculum and User 1 baseline.
+- Production persistence on Railway is NOT claimed as proven at this gate. Phase 1.5 persistence is NOT complete.
