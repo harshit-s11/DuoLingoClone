@@ -21,7 +21,6 @@ Represents learners. Default local learner has `id = 1`.
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username VARCHAR(64) NOT NULL UNIQUE,
-    email VARCHAR(255) NOT NULL UNIQUE,
     hearts INTEGER NOT NULL DEFAULT 5 CHECK(hearts BETWEEN 0 AND 5),
     hearts_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     xp_total INTEGER NOT NULL DEFAULT 0 CHECK(xp_total >= 0),

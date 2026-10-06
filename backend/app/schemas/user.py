@@ -6,7 +6,6 @@ from pydantic import BaseModel, ConfigDict
 class UserResponse(BaseModel):
     id: int
     username: str
-    email: str
     hearts: int
     max_hearts: int = 5
     hearts_updated_at: str

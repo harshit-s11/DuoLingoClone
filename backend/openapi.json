@@ -1631,10 +1631,6 @@
             "type": "string",
             "title": "Username"
           },
-          "email": {
-            "type": "string",
-            "title": "Email"
-          },
           "hearts": {
             "type": "integer",
             "title": "Hearts"
@@ -1685,7 +1681,6 @@
         "required": [
           "id",
           "username",
-          "email",
           "hearts",
           "hearts_updated_at",
           "xp_total",

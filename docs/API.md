@@ -41,7 +41,6 @@ Retrieves authenticated user profile, heart balance, gems, streak, and logical t
 {
   "id": 1,
   "username": "duo_learner",
-  "email": "learner@example.com",
   "hearts": 5,
   "max_hearts": 5,
   "hearts_updated_at": "2026-10-06T12:00:00Z",

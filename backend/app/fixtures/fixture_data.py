@@ -5,7 +5,6 @@ NOW_ISO = datetime.now(timezone.utc).isoformat()
 MOCK_USER = {
     "id": 1,
     "username": "duo_learner",
-    "email": "learner@example.com",
     "hearts": 5,
     "max_hearts": 5,
     "hearts_updated_at": NOW_ISO,

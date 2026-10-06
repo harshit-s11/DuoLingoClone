@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, Header, HTTPException, status
 
+from app.config import settings
 from app.fixtures.fixture_data import (
     MOCK_ACHIEVEMENTS,
     MOCK_COURSE_PATH,
@@ -41,6 +42,15 @@ from app.schemas.user import (
 )
 
 fixture_router = APIRouter(prefix="/api", tags=["Phase-0 Fixtures"])
+
+
+def check_debug_access(x_user_id: int):
+    """Enforce that debug endpoints are gated by ENABLE_DEBUG=true and scoped to user 1."""
+    if not settings.enable_debug or x_user_id != 1:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Debug endpoints are disabled or unauthorized for this user",
+        )
 
 
 @fixture_router.get("/me", response_model=UserResponse)
@@ -217,6 +227,7 @@ def debug_advance_day(
     x_user_id: int = Header(default=1),
 ) -> AdvanceDayResponse:
     """Simulate advancing logical clock."""
+    check_debug_access(x_user_id)
     return AdvanceDayResponse(
         date_offset_days=payload.days,
         logical_now=datetime.now(timezone.utc).isoformat(),
@@ -226,10 +237,12 @@ def debug_advance_day(
 @fixture_router.post("/debug/unlock-all", response_model=SimpleMessageResponse)
 def debug_unlock_all(x_user_id: int = Header(default=1)) -> SimpleMessageResponse:
     """Debug helper: unlock all lessons for user 1."""
+    check_debug_access(x_user_id)
     return SimpleMessageResponse(message="All lessons unlocked for user 1")
 
 
 @fixture_router.post("/debug/reset-demo", response_model=SimpleMessageResponse)
 def debug_reset_demo(x_user_id: int = Header(default=1)) -> SimpleMessageResponse:
     """Debug helper: reset user 1 progress and stats."""
+    check_debug_access(x_user_id)
     return SimpleMessageResponse(message="Demo data reset successfully")

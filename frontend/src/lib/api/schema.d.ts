@@ -660,8 +660,6 @@ export interface components {
             id: number;
             /** Username */
             username: string;
-            /** Email */
-            email: string;
             /** Hearts */
             hearts: number;
             /**
