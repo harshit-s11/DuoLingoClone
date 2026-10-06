@@ -124,3 +124,16 @@ DuoLingoClone/
 - [x] Phase-0 fixture API routes supply representative responses for all locked contracts.
 - [x] No premature Phase-1 business logic or data seeding implemented.
 - [x] Passes all type checks, linters, and test suites.
+
+---
+
+## 6. Production Deployment & Persistence (Phase 1.5 Gate)
+
+- **Production Target**: Render Web Service (FastAPI) + Vercel (Next.js).
+- **Python Version**: `3.12.8` (configured via `backend/.python-version` and `render.yaml`).
+- **Database Architecture**: SQLite stored at `./data/duolingo_clone.db`.
+- **Phase 1.5 Persistence Decision**: **Render SQLite**.
+  - Evaluated Turso/libSQL: Driver compilation issues and SQLAlchemy 2 partial index incompatibilities make it unsuitable.
+  - Render Free Tier Limitation: Filesystem is ephemeral; restarts or spin-downs reset `./data/duolingo_clone.db`.
+  - Resilience: Automatic idempotent startup seed (`init_db()` + `seed_database()`) restores full schema, 216 curriculum exercises, 8 achievements, 15 leaderboard bots, and User 1 baseline on every container cold start.
+
