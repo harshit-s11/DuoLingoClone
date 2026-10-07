@@ -53,14 +53,14 @@
     "/api/me": {
       "get": {
         "tags": [
-          "Phase-0 Fixtures"
+          "User"
         ],
-        "summary": "Get Current User",
-        "description": "Retrieve current authenticated user stats.",
-        "operationId": "get_current_user_api_me_get",
+        "summary": "Get Me",
+        "description": "Retrieve current authenticated user state, hearts, streak, and daily progress.",
+        "operationId": "get_me_api_me_get",
         "parameters": [
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -97,14 +97,14 @@
     "/api/profile": {
       "get": {
         "tags": [
-          "Phase-0 Fixtures"
+          "User"
         ],
-        "summary": "Get User Profile",
+        "summary": "Get Profile",
         "description": "Retrieve full user profile with stats and recent activity.",
-        "operationId": "get_user_profile_api_profile_get",
+        "operationId": "get_profile_api_profile_get",
         "parameters": [
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -141,14 +141,14 @@
     "/api/settings": {
       "get": {
         "tags": [
-          "Phase-0 Fixtures"
+          "User"
         ],
         "summary": "Get Settings",
         "description": "Retrieve user preferences.",
         "operationId": "get_settings_api_settings_get",
         "parameters": [
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -183,14 +183,14 @@
       },
       "patch": {
         "tags": [
-          "Phase-0 Fixtures"
+          "User"
         ],
         "summary": "Update Settings",
         "description": "Update user preferences.",
         "operationId": "update_settings_api_settings_patch",
         "parameters": [
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -237,10 +237,10 @@
     "/api/courses": {
       "get": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Courses"
         ],
         "summary": "List Courses",
-        "description": "List available courses.",
+        "description": "List all available courses.",
         "operationId": "list_courses_api_courses_get",
         "responses": {
           "200": {
@@ -263,10 +263,10 @@
     "/api/courses/{course_id}/path": {
       "get": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Courses"
         ],
         "summary": "Get Course Path",
-        "description": "Get hierarchical learning path (units -> skills -> lessons).",
+        "description": "Retrieve full hierarchical learning tree (units -> skills -> lessons)\nwith user completion and locking.",
         "operationId": "get_course_path_api_courses__course_id__path_get",
         "parameters": [
           {
@@ -276,6 +276,16 @@
             "schema": {
               "type": "integer",
               "title": "Course Id"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "X-User-Id"
             }
           }
         ],
@@ -306,11 +316,11 @@
     "/api/lessons/{lesson_id}": {
       "get": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Lessons"
         ],
-        "summary": "Get Lesson Metadata",
-        "description": "Get lesson exercises (payloads only, answer keys strictly omitted).",
-        "operationId": "get_lesson_metadata_api_lessons__lesson_id__get",
+        "summary": "Get Lesson",
+        "description": "Retrieve lesson metadata and public exercises. answer_json is NEVER included.",
+        "operationId": "get_lesson_api_lessons__lesson_id__get",
         "parameters": [
           {
             "name": "lesson_id",
@@ -349,11 +359,11 @@
     "/api/lessons/{lesson_id}/start": {
       "post": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Lessons"
         ],
-        "summary": "Start Lesson Attempt",
-        "description": "Authoritatively start a server-side lesson attempt.",
-        "operationId": "start_lesson_attempt_api_lessons__lesson_id__start_post",
+        "summary": "Start Lesson",
+        "description": "Authoritatively initiate a lesson attempt.\n\nRules:\n- 409 OUT_OF_HEARTS if user has 0 hearts.\n- 403 LESSON_LOCKED if lesson is locked.\n- Abandons existing in_progress attempt if one exists.\n- Exercises delivered in deterministic exercise_order without answers.",
+        "operationId": "start_lesson_api_lessons__lesson_id__start_post",
         "parameters": [
           {
             "name": "lesson_id",
@@ -365,7 +375,7 @@
             }
           },
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -402,11 +412,11 @@
     "/api/attempts/{attempt_id}/check": {
       "post": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Attempts"
         ],
-        "summary": "Check Attempt Answer",
-        "description": "Validate submitted answer and enforce heart rules.",
-        "operationId": "check_attempt_answer_api_attempts__attempt_id__check_post",
+        "summary": "Check Answer",
+        "description": "Authoritatively check a submitted exercise answer against server answer keys.",
+        "operationId": "check_answer_api_attempts__attempt_id__check_post",
         "parameters": [
           {
             "name": "attempt_id",
@@ -418,7 +428,7 @@
             }
           },
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -465,10 +475,10 @@
     "/api/attempts/{attempt_id}/complete": {
       "post": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Attempts"
         ],
         "summary": "Complete Attempt",
-        "description": "Authoritatively complete an attempt, awarding XP and crowns.",
+        "description": "Authoritatively complete an attempt, deriving accuracy and awarding XP.",
         "operationId": "complete_attempt_api_attempts__attempt_id__complete_post",
         "parameters": [
           {
@@ -481,7 +491,7 @@
             }
           },
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -518,10 +528,10 @@
     "/api/attempts/{attempt_id}/abandon": {
       "post": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Attempts"
         ],
         "summary": "Abandon Attempt",
-        "description": "Abandon an active attempt.",
+        "description": "Abandon an active lesson attempt.",
         "operationId": "abandon_attempt_api_attempts__attempt_id__abandon_post",
         "parameters": [
           {
@@ -534,7 +544,7 @@
             }
           },
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -571,14 +581,14 @@
     "/api/hearts/refill": {
       "post": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Gamification"
         ],
         "summary": "Refill Hearts",
-        "description": "Refill hearts via gems (350) or practice.",
+        "description": "Refill hearts back to 5 via gems (350) or practice (free).",
         "operationId": "refill_hearts_api_hearts_refill_post",
         "parameters": [
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -625,14 +635,14 @@
     "/api/leaderboard": {
       "get": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Gamification"
         ],
         "summary": "Get Leaderboard",
         "description": "Get current week's leaderboard standings.",
         "operationId": "get_leaderboard_api_leaderboard_get",
         "parameters": [
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -669,14 +679,14 @@
     "/api/achievements": {
       "get": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Gamification"
         ],
         "summary": "List Achievements",
-        "description": "List achievements and progress.",
+        "description": "List achievements and user unlocking milestones.",
         "operationId": "list_achievements_api_achievements_get",
         "parameters": [
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -717,14 +727,14 @@
     "/api/debug/advance-day": {
       "post": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Debug"
         ],
-        "summary": "Debug Advance Day",
-        "description": "Simulate advancing logical clock.",
-        "operationId": "debug_advance_day_api_debug_advance_day_post",
+        "summary": "Advance Day",
+        "description": "Advance the user's logical clock by N days to simulate time progression.",
+        "operationId": "advance_day_api_debug_advance_day_post",
         "parameters": [
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -771,14 +781,14 @@
     "/api/debug/unlock-all": {
       "post": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Debug"
         ],
-        "summary": "Debug Unlock All",
-        "description": "Debug helper: unlock all lessons for user 1.",
-        "operationId": "debug_unlock_all_api_debug_unlock_all_post",
+        "summary": "Unlock All",
+        "description": "Debug helper: unlock all lessons and skills for user 1.",
+        "operationId": "unlock_all_api_debug_unlock_all_post",
         "parameters": [
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -815,14 +825,14 @@
     "/api/debug/reset-demo": {
       "post": {
         "tags": [
-          "Phase-0 Fixtures"
+          "Debug"
         ],
-        "summary": "Debug Reset Demo",
-        "description": "Debug helper: reset user 1 progress and stats.",
-        "operationId": "debug_reset_demo_api_debug_reset_demo_post",
+        "summary": "Reset Demo",
+        "description": "Debug helper: reset user 1 progress, hearts, gems, streak, and restore seed baseline.",
+        "operationId": "reset_demo_api_debug_reset_demo_post",
         "parameters": [
           {
-            "name": "x-user-id",
+            "name": "X-User-Id",
             "in": "header",
             "required": false,
             "schema": {
@@ -870,7 +880,6 @@
             "title": "Status"
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "required": [
           "attempt_id",
@@ -953,7 +962,6 @@
             "title": "Lessons Completed"
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "required": [
           "activity_date",
@@ -1000,14 +1008,27 @@
             "title": "Exercise Id"
           },
           "user_answer": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
             "title": "User Answer"
+          },
+          "answer": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer"
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "required": [
-          "exercise_id",
-          "user_answer"
+          "exercise_id"
         ],
         "title": "CheckAnswerRequest"
       },
@@ -1017,6 +1038,17 @@
             "type": "boolean",
             "title": "Is Correct"
           },
+          "correct": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correct"
+          },
           "correct_answer": {
             "title": "Correct Answer"
           },
@@ -1024,12 +1056,45 @@
             "type": "integer",
             "title": "Hearts Remaining"
           },
+          "hearts": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hearts"
+          },
           "attempt_status": {
             "type": "string",
             "title": "Attempt Status"
+          },
+          "lesson_failed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Failed",
+            "default": false
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "required": [
           "is_correct",
@@ -1072,9 +1137,77 @@
           "streak_current": {
             "type": "integer",
             "title": "Streak Current"
+          },
+          "time_spent_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Spent Seconds"
+          },
+          "crowns_after": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crowns After"
+          },
+          "skill_completed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skill Completed"
+          },
+          "unit_completed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Completed"
+          },
+          "new_achievements": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Achievements"
+          },
+          "streak_extended": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Streak Extended"
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "required": [
           "attempt_id",
@@ -1354,7 +1487,6 @@
             "title": "Unlocked Achievements Count"
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "required": [
           "user",
@@ -1416,7 +1548,6 @@
             "title": "Date Offset Days"
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "required": [
           "timezone",
@@ -1438,7 +1569,6 @@
             "title": "Timezone"
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "title": "SettingsUpdateRequest"
       },
@@ -1534,7 +1664,6 @@
             "title": "Exercises"
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "required": [
           "attempt_id",
@@ -1609,7 +1738,6 @@
             "title": "Total Crowns"
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "required": [
           "id",
@@ -1655,6 +1783,17 @@
             ],
             "title": "Next Heart In Seconds"
           },
+          "next_heart_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Heart At"
+          },
           "xp_total": {
             "type": "integer",
             "title": "Xp Total"
@@ -1667,6 +1806,42 @@
             "type": "integer",
             "title": "Streak Current"
           },
+          "streak_active_today": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Streak Active Today",
+            "default": false
+          },
+          "daily_xp_goal": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily Xp Goal",
+            "default": 20
+          },
+          "daily_xp_progress": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily Xp Progress",
+            "default": 0
+          },
           "date_offset_days": {
             "type": "integer",
             "title": "Date Offset Days"
@@ -1676,7 +1851,6 @@
             "title": "Timezone"
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "required": [
           "id",

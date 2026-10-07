@@ -3,10 +3,15 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.attempts import router as attempts_router
+from app.api.courses import router as courses_router
+from app.api.debug import router as debug_router
+from app.api.gamification import router as gamification_router
 from app.api.health import router as health_router
+from app.api.lessons import router as lessons_router
+from app.api.users import router as users_router
 from app.config import settings
 from app.database import ensure_data_directory, init_db
-from app.fixtures.router import fixture_router
 from app.seed import seed_database
 
 
@@ -41,5 +46,10 @@ app.add_middleware(
 app.include_router(health_router, prefix="")
 app.include_router(health_router, prefix="/api")
 
-# Mount Phase-0 fixture routes (provides locked API endpoints for openapi & frontend)
-app.include_router(fixture_router)
+# Mount real Phase-1B production routers
+app.include_router(users_router, prefix="/api")
+app.include_router(courses_router, prefix="/api")
+app.include_router(lessons_router, prefix="/api")
+app.include_router(attempts_router, prefix="/api")
+app.include_router(gamification_router, prefix="/api")
+app.include_router(debug_router, prefix="/api")

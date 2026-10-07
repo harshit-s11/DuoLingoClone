@@ -52,10 +52,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get Current User
-         * @description Retrieve current authenticated user stats.
+         * Get Me
+         * @description Retrieve current authenticated user state, hearts, streak, and daily progress.
          */
-        get: operations["get_current_user_api_me_get"];
+        get: operations["get_me_api_me_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -72,10 +72,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get User Profile
+         * Get Profile
          * @description Retrieve full user profile with stats and recent activity.
          */
-        get: operations["get_user_profile_api_profile_get"];
+        get: operations["get_profile_api_profile_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -117,7 +117,7 @@ export interface paths {
         };
         /**
          * List Courses
-         * @description List available courses.
+         * @description List all available courses.
          */
         get: operations["list_courses_api_courses_get"];
         put?: never;
@@ -137,7 +137,8 @@ export interface paths {
         };
         /**
          * Get Course Path
-         * @description Get hierarchical learning path (units -> skills -> lessons).
+         * @description Retrieve full hierarchical learning tree (units -> skills -> lessons)
+         *     with user completion and locking.
          */
         get: operations["get_course_path_api_courses__course_id__path_get"];
         put?: never;
@@ -156,10 +157,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get Lesson Metadata
-         * @description Get lesson exercises (payloads only, answer keys strictly omitted).
+         * Get Lesson
+         * @description Retrieve lesson metadata and public exercises. answer_json is NEVER included.
          */
-        get: operations["get_lesson_metadata_api_lessons__lesson_id__get"];
+        get: operations["get_lesson_api_lessons__lesson_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -178,10 +179,16 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Start Lesson Attempt
-         * @description Authoritatively start a server-side lesson attempt.
+         * Start Lesson
+         * @description Authoritatively initiate a lesson attempt.
+         *
+         *     Rules:
+         *     - 409 OUT_OF_HEARTS if user has 0 hearts.
+         *     - 403 LESSON_LOCKED if lesson is locked.
+         *     - Abandons existing in_progress attempt if one exists.
+         *     - Exercises delivered in deterministic exercise_order without answers.
          */
-        post: operations["start_lesson_attempt_api_lessons__lesson_id__start_post"];
+        post: operations["start_lesson_api_lessons__lesson_id__start_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -198,10 +205,10 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Check Attempt Answer
-         * @description Validate submitted answer and enforce heart rules.
+         * Check Answer
+         * @description Authoritatively check a submitted exercise answer against server answer keys.
          */
-        post: operations["check_attempt_answer_api_attempts__attempt_id__check_post"];
+        post: operations["check_answer_api_attempts__attempt_id__check_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -219,7 +226,7 @@ export interface paths {
         put?: never;
         /**
          * Complete Attempt
-         * @description Authoritatively complete an attempt, awarding XP and crowns.
+         * @description Authoritatively complete an attempt, deriving accuracy and awarding XP.
          */
         post: operations["complete_attempt_api_attempts__attempt_id__complete_post"];
         delete?: never;
@@ -239,7 +246,7 @@ export interface paths {
         put?: never;
         /**
          * Abandon Attempt
-         * @description Abandon an active attempt.
+         * @description Abandon an active lesson attempt.
          */
         post: operations["abandon_attempt_api_attempts__attempt_id__abandon_post"];
         delete?: never;
@@ -259,7 +266,7 @@ export interface paths {
         put?: never;
         /**
          * Refill Hearts
-         * @description Refill hearts via gems (350) or practice.
+         * @description Refill hearts back to 5 via gems (350) or practice (free).
          */
         post: operations["refill_hearts_api_hearts_refill_post"];
         delete?: never;
@@ -297,7 +304,7 @@ export interface paths {
         };
         /**
          * List Achievements
-         * @description List achievements and progress.
+         * @description List achievements and user unlocking milestones.
          */
         get: operations["list_achievements_api_achievements_get"];
         put?: never;
@@ -318,10 +325,10 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Debug Advance Day
-         * @description Simulate advancing logical clock.
+         * Advance Day
+         * @description Advance the user's logical clock by N days to simulate time progression.
          */
-        post: operations["debug_advance_day_api_debug_advance_day_post"];
+        post: operations["advance_day_api_debug_advance_day_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -338,10 +345,10 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Debug Unlock All
-         * @description Debug helper: unlock all lessons for user 1.
+         * Unlock All
+         * @description Debug helper: unlock all lessons and skills for user 1.
          */
-        post: operations["debug_unlock_all_api_debug_unlock_all_post"];
+        post: operations["unlock_all_api_debug_unlock_all_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -358,10 +365,10 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Debug Reset Demo
-         * @description Debug helper: reset user 1 progress and stats.
+         * Reset Demo
+         * @description Debug helper: reset user 1 progress, hearts, gems, streak, and restore seed baseline.
          */
-        post: operations["debug_reset_demo_api_debug_reset_demo_post"];
+        post: operations["reset_demo_api_debug_reset_demo_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -429,18 +436,31 @@ export interface components {
             /** Exercise Id */
             exercise_id: number;
             /** User Answer */
-            user_answer: unknown;
+            user_answer?: unknown | null;
+            /** Answer */
+            answer?: unknown | null;
         };
         /** CheckAnswerResponse */
         CheckAnswerResponse: {
             /** Is Correct */
             is_correct: boolean;
+            /** Correct */
+            correct?: boolean | null;
             /** Correct Answer */
             correct_answer: unknown;
             /** Hearts Remaining */
             hearts_remaining: number;
+            /** Hearts */
+            hearts?: number | null;
             /** Attempt Status */
             attempt_status: string;
+            /**
+             * Lesson Failed
+             * @default false
+             */
+            lesson_failed: boolean | null;
+            /** Explanation */
+            explanation?: string | null;
         };
         /** CompleteAttemptResponse */
         CompleteAttemptResponse: {
@@ -460,6 +480,18 @@ export interface components {
             new_crown_earned: boolean;
             /** Streak Current */
             streak_current: number;
+            /** Time Spent Seconds */
+            time_spent_seconds?: number | null;
+            /** Crowns After */
+            crowns_after?: number | null;
+            /** Skill Completed */
+            skill_completed?: boolean | null;
+            /** Unit Completed */
+            unit_completed?: boolean | null;
+            /** New Achievements */
+            new_achievements?: string[] | null;
+            /** Streak Extended */
+            streak_extended?: boolean | null;
         };
         /** CourseItem */
         CourseItem: {
@@ -671,12 +703,29 @@ export interface components {
             hearts_updated_at: string;
             /** Next Heart In Seconds */
             next_heart_in_seconds?: number | null;
+            /** Next Heart At */
+            next_heart_at?: string | null;
             /** Xp Total */
             xp_total: number;
             /** Gems */
             gems: number;
             /** Streak Current */
             streak_current: number;
+            /**
+             * Streak Active Today
+             * @default false
+             */
+            streak_active_today: boolean | null;
+            /**
+             * Daily Xp Goal
+             * @default 20
+             */
+            daily_xp_goal: number | null;
+            /**
+             * Daily Xp Progress
+             * @default 0
+             */
+            daily_xp_progress: number | null;
             /** Date Offset Days */
             date_offset_days: number;
             /** Timezone */
@@ -740,11 +789,11 @@ export interface operations {
             };
         };
     };
-    get_current_user_api_me_get: {
+    get_me_api_me_get: {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path?: never;
             cookie?: never;
@@ -771,11 +820,11 @@ export interface operations {
             };
         };
     };
-    get_user_profile_api_profile_get: {
+    get_profile_api_profile_get: {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path?: never;
             cookie?: never;
@@ -806,7 +855,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path?: never;
             cookie?: never;
@@ -837,7 +886,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path?: never;
             cookie?: never;
@@ -891,7 +940,9 @@ export interface operations {
     get_course_path_api_courses__course_id__path_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-User-Id"?: number;
+            };
             path: {
                 course_id: number;
             };
@@ -919,7 +970,7 @@ export interface operations {
             };
         };
     };
-    get_lesson_metadata_api_lessons__lesson_id__get: {
+    get_lesson_api_lessons__lesson_id__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -950,11 +1001,11 @@ export interface operations {
             };
         };
     };
-    start_lesson_attempt_api_lessons__lesson_id__start_post: {
+    start_lesson_api_lessons__lesson_id__start_post: {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path: {
                 lesson_id: number;
@@ -983,11 +1034,11 @@ export interface operations {
             };
         };
     };
-    check_attempt_answer_api_attempts__attempt_id__check_post: {
+    check_answer_api_attempts__attempt_id__check_post: {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path: {
                 attempt_id: number;
@@ -1024,7 +1075,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path: {
                 attempt_id: number;
@@ -1057,7 +1108,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path: {
                 attempt_id: number;
@@ -1090,7 +1141,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path?: never;
             cookie?: never;
@@ -1125,7 +1176,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path?: never;
             cookie?: never;
@@ -1156,7 +1207,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path?: never;
             cookie?: never;
@@ -1183,11 +1234,11 @@ export interface operations {
             };
         };
     };
-    debug_advance_day_api_debug_advance_day_post: {
+    advance_day_api_debug_advance_day_post: {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path?: never;
             cookie?: never;
@@ -1218,11 +1269,11 @@ export interface operations {
             };
         };
     };
-    debug_unlock_all_api_debug_unlock_all_post: {
+    unlock_all_api_debug_unlock_all_post: {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path?: never;
             cookie?: never;
@@ -1249,11 +1300,11 @@ export interface operations {
             };
         };
     };
-    debug_reset_demo_api_debug_reset_demo_post: {
+    reset_demo_api_debug_reset_demo_post: {
         parameters: {
             query?: never;
             header?: {
-                "x-user-id"?: number;
+                "X-User-Id"?: number;
             };
             path?: never;
             cookie?: never;

@@ -1,8 +1,12 @@
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.main import app
+from app.fixtures.router import fixture_router
 
-client = TestClient(app)
+# Test client dedicated to validating Phase-0 fixture shapes and contracts
+fixture_app = FastAPI()
+fixture_app.include_router(fixture_router)
+client = TestClient(fixture_app)
 
 
 def test_get_me():

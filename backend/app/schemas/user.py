@@ -10,13 +10,17 @@ class UserResponse(BaseModel):
     max_hearts: int = 5
     hearts_updated_at: str
     next_heart_in_seconds: Optional[int] = None
+    next_heart_at: Optional[str] = None
     xp_total: int
     gems: int
     streak_current: int
+    streak_active_today: Optional[bool] = False
+    daily_xp_goal: Optional[int] = 20
+    daily_xp_progress: Optional[int] = 0
     date_offset_days: int
     timezone: str
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class ActivityItem(BaseModel):
@@ -24,7 +28,7 @@ class ActivityItem(BaseModel):
     xp_earned: int
     lessons_completed: int
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class UserProfileStats(BaseModel):
@@ -35,7 +39,7 @@ class UserProfileStats(BaseModel):
     streak_current: int
     total_crowns: int
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class ProfileResponse(BaseModel):
@@ -43,17 +47,17 @@ class ProfileResponse(BaseModel):
     recent_activity: list[ActivityItem]
     unlocked_achievements_count: int
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class SettingsResponse(BaseModel):
     timezone: str
     date_offset_days: int
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class SettingsUpdateRequest(BaseModel):
     timezone: Optional[str] = None
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")

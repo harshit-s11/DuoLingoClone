@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -12,23 +12,31 @@ class StartAttemptResponse(BaseModel):
     hearts_remaining: int
     exercises: list[ExerciseClientView]
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class CheckAnswerRequest(BaseModel):
     exercise_id: int
-    user_answer: Any
+    user_answer: Optional[Any] = None
+    answer: Optional[Any] = None
 
-    model_config = ConfigDict(extra="forbid")
+    def get_submitted_answer(self) -> Any:
+        return self.answer if self.answer is not None else self.user_answer
+
+    model_config = ConfigDict(extra="ignore")
 
 
 class CheckAnswerResponse(BaseModel):
     is_correct: bool
+    correct: Optional[bool] = None
     correct_answer: Any
     hearts_remaining: int
+    hearts: Optional[int] = None
     attempt_status: str
+    lesson_failed: Optional[bool] = False
+    explanation: Optional[str] = None
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class CompleteAttemptResponse(BaseModel):
@@ -40,12 +48,18 @@ class CompleteAttemptResponse(BaseModel):
     is_replay: bool
     new_crown_earned: bool
     streak_current: int
+    time_spent_seconds: Optional[int] = None
+    crowns_after: Optional[int] = None
+    skill_completed: Optional[bool] = None
+    unit_completed: Optional[bool] = None
+    new_achievements: Optional[list[str]] = None
+    streak_extended: Optional[bool] = None
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class AbandonAttemptResponse(BaseModel):
     attempt_id: int
     status: str
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
