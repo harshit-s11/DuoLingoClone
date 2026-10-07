@@ -40,7 +40,7 @@ export type AdvanceDayResponse =
 const DEFAULT_USER_ID = 1;
 
 /**
- * Universal fetch wrapper applying X-User-Id header and error handling.
+ * Universal fetch wrapper applying X-User-Id header, automatic retry for cold starts, and typed error handling.
  */
 export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers || {});
@@ -51,25 +51,57 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): 
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(endpoint, {
-    ...options,
-    headers,
-  });
+  const maxRetries = 10;
+  const retryDelayMs = 3000;
+  let lastError: Error | null = null;
 
-  if (!response.ok) {
-    let errorDetail = `Request failed with status ${response.status}`;
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
-      const data = await response.json();
-      if (data?.detail) {
-        errorDetail = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
+      const response = await fetch(endpoint, {
+        ...options,
+        headers,
+      });
+
+      // Handle transient gateway / wake-up codes (502, 503, 504)
+      if ([502, 503, 504].includes(response.status)) {
+        if (attempt < maxRetries - 1) {
+          await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+          continue;
+        }
       }
-    } catch {
-      // Fallback to HTTP error
+
+      if (!response.ok) {
+        let errorDetail = `Request failed with status ${response.status}`;
+        try {
+          const data = await response.json();
+          if (data?.detail) {
+            errorDetail = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
+          }
+        } catch {
+          // fallback
+        }
+        throw new Error(errorDetail);
+      }
+
+      return (await response.json()) as T;
+    } catch (err: unknown) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      // Only retry if it looks like a network failure or 502/503/504
+      if (
+        attempt < maxRetries - 1 &&
+        (lastError.message.includes('502') ||
+          lastError.message.includes('503') ||
+          lastError.message.includes('504') ||
+          lastError.message.includes('Failed to fetch'))
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+        continue;
+      }
+      throw lastError;
     }
-    throw new Error(errorDetail);
   }
 
-  return response.json();
+  throw lastError || new Error('Network request failed');
 }
 
 /* ==================== Strongly Typed Client Functions ==================== */
@@ -158,5 +190,17 @@ export async function advanceDebugDay(days: number): Promise<AdvanceDayResponse>
   return fetchApi<AdvanceDayResponse>('/api/debug/advance-day', {
     method: 'POST',
     body: JSON.stringify({ days }),
+  });
+}
+
+export async function resetDemo(): Promise<{ message: string }> {
+  return fetchApi<{ message: string }>('/api/debug/reset-demo', {
+    method: 'POST',
+  });
+}
+
+export async function unlockAll(): Promise<{ message: string }> {
+  return fetchApi<{ message: string }>('/api/debug/unlock-all', {
+    method: 'POST',
   });
 }
